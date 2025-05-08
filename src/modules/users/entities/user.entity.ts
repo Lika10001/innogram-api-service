@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { Post } from '../../posts/entities/post.entity';
 import { Comment } from '../../comments/entities/comment.entity';
 import { Like } from '../../likes/entities/like.entity';
@@ -15,7 +15,7 @@ export class User {
     @Column({ length: 64, unique: true })
     email: string;
 
-    @Column({ length: 20, unique: true, nullable: true })
+    @Column({ type: 'varchar', length: 20, unique: true, nullable: true })
     phone: string | null;
 
     @Column({ length: 64 })
@@ -36,9 +36,14 @@ export class User {
     @OneToMany(() => Message, (message) => message.recipient)
     receivedMessages: Message[];
 
-    @OneToMany(() => User, (user) => user.followers)
-    following: User[];
-
-    @OneToMany(() => User, (user) => user.following)
+    @ManyToMany(() => User, (u) => u.following)
+    @JoinTable({
+      name: 'user_followers',
+      joinColumn: { name: 'following_id', referencedColumnName: 'id' },
+      inverseJoinColumn: { name: 'follower_id', referencedColumnName: 'id' },
+    })
     followers: User[];
+  
+    @ManyToMany(() => User, (u) => u.followers)
+    following: User[];
 }

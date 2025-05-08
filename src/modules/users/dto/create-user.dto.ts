@@ -20,7 +20,7 @@ export class CreateUserDto {
     @IsOptional()
     @IsString()
     @Length(7, 20)
-    phone?: string;
+    phone?: string | null;
 
     @IsOptional()
     @IsString()
