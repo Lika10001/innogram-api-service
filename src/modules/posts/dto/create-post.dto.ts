@@ -5,8 +5,10 @@ import {
     IsString,
     IsArray,
     IsUUID,
+    ValidateNested,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { Type } from 'class-transformer';
+import { ImageDto } from '../../images/dto/image.dto';
 
 export class CreatePostDto {
     @IsString()
@@ -18,15 +20,11 @@ export class CreatePostDto {
     @IsNotEmpty()
     content: string;
 
-    @Transform(({ value }): string[] | string => {
-        if (typeof value === 'string') return [value];
-        return value;
-    })
     @IsOptional()
     @IsArray()
-    @IsString({ each: true })
-    @Length(10, 255, { each: true })
-    imageUrl?: string[] | null;
+    @ValidateNested({ each: true })
+    @Type(() => ImageDto)
+    imageUrls?: ImageDto[];
 
     @IsNotEmpty()
     @IsUUID()

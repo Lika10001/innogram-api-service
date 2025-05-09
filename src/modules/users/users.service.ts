@@ -11,14 +11,15 @@ export class UsersService {
         @InjectRepository(User)
         private usersRepository: Repository<User>,
     ) {}
-    async create(createUserDto: CreateUserDto): Promise<User> {
+    
+    async create(dto: CreateUserDto): Promise<User> {
         const existingUser = await this.usersRepository.findOneBy({
-            email: createUserDto.email,
+            email: dto.email,
         });
         if (existingUser) {
             throw new Error('User with this email already exists');
         }
-        const user = this.usersRepository.create(createUserDto);
+        const user = this.usersRepository.create(dto);
         return this.usersRepository.save(user);
     }
 
@@ -34,9 +35,9 @@ export class UsersService {
         return user;
     }
 
-    async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    async update(id: string, dto: UpdateUserDto): Promise<User> {
         const user = await this.findOne(id);
-        Object.assign(user, updateUserDto);
+        Object.assign(user, dto);
         return this.usersRepository.save(user);
     }
 

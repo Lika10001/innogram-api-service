@@ -1,11 +1,10 @@
 import {
     IsNotEmpty,
-    IsString,
     IsUUID,
+    IsString,
     Length,
     ValidateNested,
 } from 'class-validator';
-import { CommentResponseDto } from './comment-response.dto';
 import { Type } from 'class-transformer';
 
 class AuthorDto {
@@ -19,7 +18,7 @@ class AuthorDto {
     name: string;
 }
 
-export class CommentWithRepliesDto {
+export class CommentResponseDto {
     @IsNotEmpty()
     @IsUUID()
     id: string;
@@ -37,6 +36,5 @@ export class CommentWithRepliesDto {
     @Type(() => AuthorDto)
     author: AuthorDto;
 
-    @IsNotEmpty()
-    children: CommentResponseDto[];
+    children?: CommentResponseDto[] | null;
 }

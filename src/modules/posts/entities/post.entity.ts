@@ -1,35 +1,20 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    ManyToOne,
-    CreateDateColumn,
-    UpdateDateColumn,
-    OneToMany,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Comment } from '../../comments/entities/comment.entity';
 import { Like } from '../../likes/entities/like.entity';
+import { BaseEntity } from '../../../common/entities/baseEntity';
+import { Image } from '../../images/entities/image.entity';
 
 @Entity('posts')
-export class Post {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-
-    @Column({ length: 255 })
+export class Post extends BaseEntity {
+    @Column({ type: 'varchar', length: 255 })
     title: string;
 
     @Column({ type: 'text' })
     content: string;
 
-    @Column('text', { array: true, nullable: true, name: 'image_urls' })
-    imageUrls: string[] | null;
-
-    @CreateDateColumn({ name: 'created_at' })
-    createdAt: Date;
-
-    @UpdateDateColumn({ name: 'updated_at' })
-    updatedAt: Date;
+    @OneToMany(() => Image, (image) => image.post, { cascade: true })
+    imageUrls?: Image[];
 
     @ManyToOne(() => User, (user) => user.posts, { onDelete: 'CASCADE' })
     author: User;

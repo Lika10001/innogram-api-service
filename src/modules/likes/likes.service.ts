@@ -3,34 +3,21 @@ import { CreateLikeDto } from './dto/create-like.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Like } from './entities/like.entity';
-import { User } from '../users/entities/user.entity';
-import { Post } from '../posts/entities/post.entity';
+import { UsersService } from '../users/users.service';
+import { PostsService } from '../posts/posts.service';
 
 @Injectable()
 export class LikesService {
     constructor(
         @InjectRepository(Like)
         private likesRepository: Repository<Like>,
-        @InjectRepository(User)
-        private usersRepository: Repository<User>,
-        @InjectRepository(Post)
-        private postsRepository: Repository<Post>,
+        private readonly usersService: UsersService,
+        private readonly postsService: PostsService,
     ) {}
 
-    async create(createLikeDto: CreateLikeDto): Promise<Like> {
-        const user = await this.usersRepository.findOneBy({
-            id: createLikeDto.userId,
-        });
-        if (!user) {
-            throw new Error(`User with id ${createLikeDto.userId} not found`);
-        }
-
-        const post = await this.postsRepository.findOneBy({
-            id: createLikeDto.postId,
-        });
-        if (!post) {
-            throw new Error(`Post with id ${createLikeDto.postId} not found`);
-        }
+    async create(dto: CreateLikeDto): Promise<Like> {
+        const user = await this.usersService.findOne(dto.userId);
+        const post = await this.postsService.findOne(dto.postId);
 
         if (post.author.id === user.id) {
             throw new Error('User cannot like their own post');
@@ -38,8 +25,8 @@ export class LikesService {
 
         const existingLike = await this.likesRepository.findOne({
             where: {
-                user: { id: createLikeDto.userId },
-                post: { id: createLikeDto.postId },
+                user: { id: dto.userId },
+                post: { id: dto.postId },
             },
         });
 

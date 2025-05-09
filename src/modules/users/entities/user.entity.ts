@@ -1,24 +1,22 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { Post } from '../../posts/entities/post.entity';
 import { Comment } from '../../comments/entities/comment.entity';
 import { Like } from '../../likes/entities/like.entity';
 import { Message } from '../../messages/entities/message.entity';
+import { BaseEntity } from '../../../common/entities/baseEntity';
 
 @Entity('users')
-export class User {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-
-    @Column({ length: 64 })
+export class User extends BaseEntity {
+    @Column({ type: 'varchar', length: 64 })
     name: string;
 
-    @Column({ length: 64, unique: true })
+    @Column({ type: 'varchar', length: 64, unique: true })
     email: string;
 
     @Column({ type: 'varchar', length: 20, unique: true, nullable: true })
     phone: string | null;
 
-    @Column({ length: 64 })
+    @Column({ type: 'varchar', length: 64 })
     password: string;
 
     @OneToMany(() => Post, (post) => post.author)
@@ -38,12 +36,12 @@ export class User {
 
     @ManyToMany(() => User, (u) => u.following)
     @JoinTable({
-      name: 'user_followers',
-      joinColumn: { name: 'following_id', referencedColumnName: 'id' },
-      inverseJoinColumn: { name: 'follower_id', referencedColumnName: 'id' },
+        name: 'user_followers',
+        joinColumn: { name: 'following_id', referencedColumnName: 'id' },
+        inverseJoinColumn: { name: 'follower_id', referencedColumnName: 'id' },
     })
     followers: User[];
-  
+
     @ManyToMany(() => User, (u) => u.followers)
     following: User[];
 }

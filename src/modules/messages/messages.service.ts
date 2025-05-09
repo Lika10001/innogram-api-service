@@ -4,27 +4,24 @@ import { UpdateMessageDto } from './dto/update-message.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Message } from './entities/message.entity';
-import { User } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class MessagesService {
     constructor(
         @InjectRepository(Message)
         private messageRepository: Repository<Message>,
-        @InjectRepository(User)
-        private userRepository: Repository<User>,
+        private readonly usersService: UsersService,
     ) {}
 
     async create(dto: CreateMessageDto): Promise<Message> {
-        const sender = await this.userRepository.findOneBy({
-            id: dto.senderId,
-        });
-        const recipient = await this.userRepository.findOneBy({
-            id: dto.recipientId,
-        });
+        const sender = await this.usersService.findOne(dto.senderId);
+        const recipient = await this.usersService.findOne(dto.recipientId);
 
-        if (!sender || !recipient) {
-            throw new NotFoundException('Sender or recipient not found');
+        if (sender === recipient) {
+            throw new NotFoundException(
+                `Sender and recipient cannot be the same user`,
+            );
         }
 
         const message = this.messageRepository.create({
@@ -39,7 +36,7 @@ export class MessagesService {
     findAll(): Promise<Message[]> {
         return this.messageRepository.find({
             relations: ['sender', 'recipient'],
-            order: { timestamp: 'DESC' },
+            order: { createdAt: 'DESC' },
         });
     }
 

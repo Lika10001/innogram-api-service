@@ -1,24 +1,12 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    ManyToOne,
-    OneToMany,
-    CreateDateColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Post } from '../../posts/entities/post.entity';
+import { BaseEntity } from '../../../common/entities/baseEntity';
 
 @Entity('comments')
-export class Comment {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-
-    @Column({ length: 255 })
+export class Comment extends BaseEntity {
+    @Column({ type: 'text' })
     text: string;
-
-    @CreateDateColumn({ name: 'created_at' })
-    createdAt: Date;
 
     @ManyToOne(() => User, (user) => user.comments, { onDelete: 'CASCADE' })
     author: User;
@@ -26,11 +14,12 @@ export class Comment {
     @ManyToOne(() => Post, (post) => post.comments, { onDelete: 'CASCADE' })
     post: Post;
 
-    @OneToMany(() => Comment, (comment) => comment.parent)
+    @OneToMany(() => Comment, (comment) => comment.parent, { nullable: true })
     children?: Comment[] | null;
 
     @ManyToOne(() => Comment, (comment) => comment.children, {
         onDelete: 'CASCADE',
+        nullable: true,
     })
     parent?: Comment | null;
 }

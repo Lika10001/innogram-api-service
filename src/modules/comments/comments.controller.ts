@@ -6,12 +6,13 @@ import {
     Patch,
     Param,
     Delete,
+    Query,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment } from './entities/comment.entity';
-import { CommentResponseDto } from './dto/comment-response.dto';
+import { CommentResponseDto } from './dto/responses/comment-response.dto';
 
 @Controller('comments')
 export class CommentsController {
@@ -22,8 +23,8 @@ export class CommentsController {
         return this.commentsService.create(createCommentDto);
     }
 
-    @Get('/post/:postId')
-    findAll(@Param('postId') postId: string): Promise<CommentResponseDto[]> {
+    @Get()
+    findAll(@Query('postId') postId?: string): Promise<CommentResponseDto[]> {
         return this.commentsService.findAll(postId);
     }
 

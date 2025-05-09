@@ -1,22 +1,11 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    ManyToOne,
-    CreateDateColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { BaseEntity } from '../../../common/entities/baseEntity';
 
 @Entity('messages')
-export class Message {
-    @PrimaryGeneratedColumn()
-    id: string;
-
-    @Column({ type: 'varchar', length: 255 })
+export class Message extends BaseEntity {
+    @Column({ type: 'text' })
     content: string;
-
-    @CreateDateColumn()
-    timestamp: Date;
 
     @ManyToOne(() => User, (user) => user.sentMessages, { onDelete: 'CASCADE' })
     sender: User;

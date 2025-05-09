@@ -22,7 +22,6 @@ export class CreateUserDto {
     @Length(7, 20)
     phone?: string | null;
 
-    @IsOptional()
     @IsString()
     @Length(6, 64)
     password: string;

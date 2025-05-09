@@ -4,31 +4,22 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
-import { User } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class PostsService {
     constructor(
         @InjectRepository(Post)
         private postsRepository: Repository<Post>,
-        @InjectRepository(User)
-        private usersRepository: Repository<User>,
+        private readonly usersService: UsersService,
     ) {}
 
-    async create(createPostDto: CreatePostDto): Promise<Post> {
-        const author = await this.usersRepository.findOneBy({
-            id: createPostDto.authorId,
-        });
-        if (!author) {
-            throw new NotFoundException(
-                `User with id ${createPostDto.authorId} not found`,
-            );
-        }
-
+    async create(dto: CreatePostDto): Promise<Post> {
+        const author = await this.usersService.findOne(dto.authorId);
         const post = this.postsRepository.create({
-            title: createPostDto.title,
-            content: createPostDto.content,
-            imageUrls: createPostDto.imageUrl,
+            title: dto.title,
+            content: dto.content,
+            imageUrls: dto.imageUrls,
             author,
         });
 
@@ -42,7 +33,7 @@ export class PostsService {
     async findOne(id: string): Promise<Post> {
         const post = await this.postsRepository.findOne({
             where: { id },
-            relations: ['author'],
+            relations: ['author', 'images'],
         });
 
         if (!post) {
@@ -52,22 +43,9 @@ export class PostsService {
         return post;
     }
 
-    async update(id: string, updatePostDto: UpdatePostDto): Promise<Post> {
+    async update(id: string, dto: UpdatePostDto): Promise<Post> {
         const post = await this.findOne(id);
-
-        if (updatePostDto.authorId) {
-            const author = await this.usersRepository.findOneBy({
-                id: updatePostDto.authorId,
-            });
-            if (!author) {
-                throw new NotFoundException(
-                    `User with id ${updatePostDto.authorId} not found`,
-                );
-            }
-            post.author = author;
-        }
-
-        Object.assign(post, updatePostDto);
+        Object.assign(post, dto);
         return this.postsRepository.save(post);
     }
 
