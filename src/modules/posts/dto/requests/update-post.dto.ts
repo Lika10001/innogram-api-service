@@ -7,7 +7,7 @@ import {
     IsNotEmpty,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ImageDto } from '../../images/dto/image.dto';
+import { ImageDto } from '../../../images/dto/image.dto';
 
 export class UpdatePostDto {
     @IsNotEmpty()
@@ -22,6 +22,6 @@ export class UpdatePostDto {
     @IsOptional()
     @IsArray()
     @ValidateNested({ each: true })
-    @Type(() => ImageDto)
+    @Type((): typeof ImageDto => ImageDto)
     imageUrls?: ImageDto[];
 }

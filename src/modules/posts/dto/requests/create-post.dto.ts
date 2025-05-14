@@ -8,7 +8,7 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ImageDto } from '../../images/dto/image.dto';
+import { ImageDto } from '../../../images/dto/image.dto';
 
 export class CreatePostDto {
     @IsString()
@@ -23,7 +23,7 @@ export class CreatePostDto {
     @IsOptional()
     @IsArray()
     @ValidateNested({ each: true })
-    @Type(() => ImageDto)
+    @Type((): typeof ImageDto => ImageDto)
     imageUrls?: ImageDto[];
 
     @IsNotEmpty()

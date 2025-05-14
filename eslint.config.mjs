@@ -38,6 +38,14 @@ export default tseslint.config(
             '@typescript-eslint/no-floating-promises': 'off',
             '@typescript-eslint/no-extraneous-class': 'off',
             'prettier/prettier': ['error', {}, { usePrettierrc: true }],
+            '@typescript-eslint/no-inferrable-types': 'off',
+            '@typescript-eslint/explicit-function-return-type': [
+                'error',
+                {
+                    allowExpressions: true,
+                    allowTypedFunctionExpressions: false,
+                },
+            ],
         },
     },
 );

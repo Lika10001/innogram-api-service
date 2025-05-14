@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
+import { CreateCommentDto } from './dto/requests/create-comment.dto';
+import { UpdateCommentDto } from './dto/requests/update-comment.dto';
 import { Comment } from './entities/comment.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -27,11 +27,13 @@ export class CommentsService {
                 name: comment.author.name,
             },
             children:
-                comment.children?.map((child) => this.mapComment(child)) ?? [],
+                comment.children?.map(
+                    (child): CommentResponseDto => this.mapComment(child),
+                ) ?? [],
         };
     }
 
-    async create(dto: CreateCommentDto) {
+    async create(dto: CreateCommentDto): Promise<Comment> {
         const { userId, postId, text, parentId } = dto;
 
         const user = await this.usersService.findOne(userId);
@@ -72,7 +74,9 @@ export class CommentsService {
             relations: ['author', 'post', 'children', 'children.author'],
         });
 
-        return comments.map((comment) => this.mapComment(comment));
+        return comments.map(
+            (comment): CommentResponseDto => this.mapComment(comment),
+        );
     }
 
     async findOne(id: string): Promise<CommentResponseDto> {

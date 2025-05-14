@@ -2,7 +2,7 @@ import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Comment } from '../../comments/entities/comment.entity';
 import { Like } from '../../likes/entities/like.entity';
-import { BaseEntity } from '../../../common/entities/baseEntity';
+import { BaseEntity } from '../../../common/entities/base-entity';
 import { Image } from '../../images/entities/image.entity';
 
 @Entity('posts')
@@ -13,15 +13,19 @@ export class Post extends BaseEntity {
     @Column({ type: 'text' })
     content: string;
 
-    @OneToMany(() => Image, (image) => image.post, { cascade: true })
+    @OneToMany((): typeof Image => Image, (image): Post => image.post, {
+        cascade: true,
+    })
     imageUrls?: Image[];
 
-    @ManyToOne(() => User, (user) => user.posts, { onDelete: 'CASCADE' })
+    @ManyToOne((): typeof User => User, (user): Post[] => user.posts, {
+        onDelete: 'CASCADE',
+    })
     author: User;
 
-    @OneToMany(() => Comment, (comment) => comment.post)
+    @OneToMany((): typeof Comment => Comment, (comment): Post => comment.post)
     comments: Comment[];
 
-    @OneToMany(() => Like, (like) => like.post)
+    @OneToMany((): typeof Like => Like, (like): Post => like.post)
     likes: Like[];
 }

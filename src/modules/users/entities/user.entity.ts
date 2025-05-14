@@ -3,7 +3,7 @@ import { Post } from '../../posts/entities/post.entity';
 import { Comment } from '../../comments/entities/comment.entity';
 import { Like } from '../../likes/entities/like.entity';
 import { Message } from '../../messages/entities/message.entity';
-import { BaseEntity } from '../../../common/entities/baseEntity';
+import { BaseEntity } from '../../../common/entities/base-entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -19,22 +19,25 @@ export class User extends BaseEntity {
     @Column({ type: 'varchar', length: 64 })
     password: string;
 
-    @OneToMany(() => Post, (post) => post.author)
+    @OneToMany((): typeof Post => Post, (post): User => post.author)
     posts: Post[];
 
-    @OneToMany(() => Comment, (comment) => comment.author)
+    @OneToMany((): typeof Comment => Comment, (comment): User => comment.author)
     comments: Comment[];
 
-    @OneToMany(() => Like, (like) => like.user)
+    @OneToMany((): typeof Like => Like, (like): User => like.user)
     likes: Like[];
 
-    @OneToMany(() => Message, (message) => message.sender)
+    @OneToMany((): typeof Message => Message, (message): User => message.sender)
     sentMessages: Message[];
 
-    @OneToMany(() => Message, (message) => message.recipient)
+    @OneToMany(
+        (): typeof Message => Message,
+        (message): User => message.recipient,
+    )
     receivedMessages: Message[];
 
-    @ManyToMany(() => User, (u) => u.following)
+    @ManyToMany((): typeof User => User, (u): User[] => u.following)
     @JoinTable({
         name: 'user_followers',
         joinColumn: { name: 'following_id', referencedColumnName: 'id' },
@@ -42,6 +45,6 @@ export class User extends BaseEntity {
     })
     followers: User[];
 
-    @ManyToMany(() => User, (u) => u.followers)
+    @ManyToMany((): typeof User => User, (u): User[] => u.followers)
     following: User[];
 }

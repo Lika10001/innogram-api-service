@@ -9,6 +9,12 @@ export class Image {
     @Column({ type: 'varchar', length: 255 })
     url: string;
 
-    @ManyToOne(() => Post, (post) => post.imageUrls, { onDelete: 'CASCADE' })
+    @ManyToOne(
+        (): typeof Post => Post,
+        (post): Image[] | null | undefined => post.imageUrls,
+        {
+            onDelete: 'CASCADE',
+        },
+    )
     post: Post;
 }

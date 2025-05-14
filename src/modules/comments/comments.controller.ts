@@ -9,8 +9,8 @@ import {
     Query,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
+import { CreateCommentDto } from './dto/requests/create-comment.dto';
+import { UpdateCommentDto } from './dto/requests/update-comment.dto';
 import { Comment } from './entities/comment.entity';
 import { CommentResponseDto } from './dto/responses/comment-response.dto';
 
